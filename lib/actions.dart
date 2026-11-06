@@ -101,15 +101,15 @@ String _waNumber(String n) {
 }
 
 Future<String> _whatsapp(String to, String msg) async {
-  var num = to;
+  var dest = to;
   var who = to;
   if (!RegExp(r'^[+0-9 ()-]{6,}$').hasMatch(to.trim())) {
     final (n, w) = await _numberFor(to);
     if (n == null) return w;
-    num = n;
+    dest = n;
     who = w;
   }
-  final u = Uri.parse('https://wa.me/${_waNumber(num)}?text=${Uri.encodeComponent(msg)}');
+  final u = Uri.parse('https://wa.me/${_waNumber(dest)}?text=${Uri.encodeComponent(msg)}');
   final ok = await launchUrl(u, mode: LaunchMode.externalApplication);
   return ok
       ? 'WhatsApp chat with $who opened with the message typed. The user must tap Send.'
@@ -173,7 +173,7 @@ Future<String> _device(String action, dynamic value) async {
     case 'volume_up':
     case 'volume_down':
       final cur = await VolumeController().getVolume();
-      final nv = (cur + (action == 'volume_up' ? 0.1 : -0.1)).clamp(0.0, 1.0);
+      final double nv = (cur + (action == 'volume_up' ? 0.1 : -0.1)).clamp(0.0, 1.0).toDouble();
       VolumeController().setVolume(nv);
       return 'Volume ${(nv * 100).round()}%.';
     case 'brightness':
@@ -275,7 +275,8 @@ Future<String> runAction(String name, Map a) async {
     switch (name) {
       case 'call_contact':
         final (n, w) = await _numberFor('${a['name'] ?? ''}');
-        return n == null ? w : _call(n, w);
+        if (n == null) return w;
+        return _call(n, w);
       case 'call_number':
         return _call('${a['number'] ?? ''}', '${a['number'] ?? ''}');
       case 'send_whatsapp':

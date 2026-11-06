@@ -5,10 +5,12 @@ on:
   push:
     branches:
       - master
+      - main
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     env:
       GROQ_KEYS: ${{ secrets.GROQ_KEYS }}
       SERP_KEYS: ${{ secrets.SERP_KEYS }}
@@ -36,6 +38,7 @@ jobs:
           python3 tool/patch_android.py
 
       - run: flutter pub get
+
       - run: dart run flutter_launcher_icons
 
       - name: Build APK
