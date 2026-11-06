@@ -1,0 +1,40 @@
+name: alex_ai
+description: Alex AI - Your Personal Assistant AI
+publish_to: 'none'
+version: 1.0.0+1
+environment:
+  sdk: '>=3.3.0 <4.0.0'
+dependencies:
+  flutter:
+    sdk: flutter
+  http: ^1.2.2
+  shared_preferences: ^2.3.2
+  flutter_secure_storage: ^9.2.2
+  geolocator: ^13.0.1
+  speech_to_text: ^7.0.0
+  url_launcher: ^6.3.1
+  android_intent_plus: ^5.2.0
+  flutter_contacts: ^1.1.9+2
+  flutter_phone_direct_caller: ^2.1.1
+  torch_light: ^1.1.0
+  volume_controller: ^2.0.8
+  screen_brightness: ^1.0.1
+  battery_plus: ^6.0.3
+  vibration: ^2.0.1
+  image_picker: ^1.1.2
+  gal: ^2.3.0
+  flutter_local_notifications: ^17.2.3
+  timezone: ^0.9.4
+dev_dependencies:
+  flutter_lints: ^4.0.0
+  flutter_launcher_icons: ^0.14.1
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/logo.png
+flutter_launcher_icons:
+  android: true
+  ios: false
+  image_path: "assets/icon.png"
+  adaptive_icon_background: "#010522"
+  adaptive_icon_foreground: "assets/icon_fg.png"

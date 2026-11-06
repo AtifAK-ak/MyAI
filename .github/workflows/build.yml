@@ -1,0 +1,43 @@
+name: Build Alex AI APK
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      GROQ_KEYS: ${{ secrets.GROQ_KEYS }}
+      SERP_KEYS: ${{ secrets.SERP_KEYS }}
+      TAVILY_KEYS: ${{ secrets.TAVILY_KEYS }}
+      NEWSDATA_KEYS: ${{ secrets.NEWSDATA_KEYS }}
+      WEATHER_KEYS: ${{ secrets.WEATHER_KEYS }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Create Android scaffold
+        run: |
+          flutter create . --platforms=android --org com.atif --project-name alex_ai
+          rm -rf test
+          python3 tool/patch_android.py
+      - run: flutter pub get
+      - run: dart run flutter_launcher_icons
+      - name: Build APK
+        run: >
+          flutter build apk --release
+          "--dart-define=GROQ_KEYS=$GROQ_KEYS"
+          "--dart-define=SERP_KEYS=$SERP_KEYS"
+          "--dart-define=TAVILY_KEYS=$TAVILY_KEYS"
+          "--dart-define=NEWSDATA_KEYS=$NEWSDATA_KEYS"
+          "--dart-define=WEATHER_KEYS=$WEATHER_KEYS"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Alex-AI-APK
+          path: build/app/outputs/flutter-apk/app-release.apk
