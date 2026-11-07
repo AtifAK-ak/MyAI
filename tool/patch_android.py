@@ -51,3 +51,15 @@ elif grv.exists():
     t += "\ndependencies {\n    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.4'\n}\n"
     grv.write_text(t)
 print('patched')
+
+# ---- AGP 9 compatibility for Flutter and legacy Android plugins ----
+# Keep the legacy DSL/Kotlin plugin mode until all Flutter plugins migrate.
+props = pathlib.Path('android/gradle.properties')
+lines = props.read_text().splitlines() if props.exists() else []
+settings = {
+    'android.newDsl': 'false',
+    'android.builtInKotlin': 'false',
+}
+lines = [line for line in lines if not any(line.startswith(key + '=') for key in settings)]
+lines.extend(f'{key}={value}' for key, value in settings.items())
+props.write_text('\n'.join(lines) + '\n')
