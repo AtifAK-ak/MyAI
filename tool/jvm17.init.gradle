@@ -1,5 +1,4 @@
-// Align Android module Java compileOptions and KotlinCompile tasks.
-// This applies to the app and every Android library plugin.
+// Align Java and Kotlin compilation across the app and Android plugins.
 allprojects {
     afterEvaluate {
         def androidExtension = extensions.findByName("android")
@@ -14,15 +13,9 @@ allprojects {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    plugins.withId("kotlin-android") {
-        tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
-            kotlinOptions.jvmTarget = "17"
-        }
-    }
-
-    plugins.withId("org.jetbrains.kotlin.android") {
-        tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
-            kotlinOptions.jvmTarget = "17"
-        }
+    // Avoid a hard reference to KotlinCompile: some Gradle/AGP combinations
+    // resolve that class in the project namespace and fail during configuration.
+    tasks.matching { task -> task.name ==~ /compile.*Kotlin/ }.configureEach { task ->
+        task.kotlinOptions.jvmTarget = "17"
     }
 }
