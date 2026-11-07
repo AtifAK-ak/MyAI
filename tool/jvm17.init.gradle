@@ -1,17 +1,28 @@
-// Enforce a consistent JVM 17 target for Java and Kotlin tasks in every
-// Android project, including third-party Flutter plugins.
+// Align Android module Java compileOptions and KotlinCompile tasks.
+// This applies to the app and every Android library plugin.
 allprojects {
-    tasks.withType(org.gradle.api.tasks.compile.JavaCompile).configureEach {
-        sourceCompatibility = '17'
-        targetCompatibility = '17'
+    afterEvaluate {
+        def androidExtension = extensions.findByName("android")
+        if (androidExtension != null) {
+            androidExtension.compileOptions.sourceCompatibility = JavaVersion.VERSION_17
+            androidExtension.compileOptions.targetCompatibility = JavaVersion.VERSION_17
+        }
     }
 
-    tasks.configureEach { task ->
-        if (task.class.name.contains('KotlinCompile')) {
-            def kotlinOptions = task.hasProperty('kotlinOptions') ? task.property('kotlinOptions') : null
-            if (kotlinOptions != null) {
-                kotlinOptions.jvmTarget = '17'
-            }
+    tasks.withType(org.gradle.api.tasks.compile.JavaCompile).configureEach {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    plugins.withId("kotlin-android") {
+        tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+            kotlinOptions.jvmTarget = "17"
+        }
+    }
+
+    plugins.withId("org.jetbrains.kotlin.android") {
+        tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+            kotlinOptions.jvmTarget = "17"
         }
     }
 }
