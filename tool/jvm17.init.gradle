@@ -1,8 +1,11 @@
-// Align Java and Kotlin compilation across the app and Android plugins.
+// Align Android compile SDK and Java/Kotlin targets across app and plugins.
 allprojects {
     afterEvaluate {
         def androidExtension = extensions.findByName("android")
         if (androidExtension != null) {
+            // AndroidX dependencies used by current Flutter plugins require API 34+.
+            // Use API 36 consistently for every Android library and the app.
+            androidExtension.compileSdk = 36
             androidExtension.compileOptions.sourceCompatibility = JavaVersion.VERSION_17
             androidExtension.compileOptions.targetCompatibility = JavaVersion.VERSION_17
         }
@@ -13,8 +16,7 @@ allprojects {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    // Avoid a hard reference to KotlinCompile: some Gradle/AGP combinations
-    // resolve that class in the project namespace and fail during configuration.
+    // Avoid hard class references that can fail during plugin configuration.
     tasks.matching { task -> task.name ==~ /compile.*Kotlin/ }.configureEach { task ->
         task.kotlinOptions.jvmTarget = "17"
     }
