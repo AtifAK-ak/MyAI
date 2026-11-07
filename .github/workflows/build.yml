@@ -6,6 +6,7 @@ on:
     branches:
       - master
       - main
+      - 'fix/**'
 
 jobs:
   build:
@@ -36,6 +37,11 @@ jobs:
           flutter create . --platforms=android --org com.atif --project-name alex_ai
           rm -rf test
           python3 tool/patch_android.py
+
+      - name: Align Java and Kotlin JVM targets to 17
+        run: |
+          mkdir -p "$HOME/.gradle/init.d"
+          cp tool/jvm17.init.gradle "$HOME/.gradle/init.d/alex-jvm17.gradle"
 
       - run: flutter pub get
 
